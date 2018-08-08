@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from tkinter import *
 from tkinter import filedialog, simpledialog
+import csv
 import CrisPy
 
 class App(Frame):
@@ -8,6 +9,7 @@ class App(Frame):
         Frame.__init__(self, master)
         self.pack()
         self.createWidgets()
+        self.mut_freq_dict = {}
 
     def createWidgets(self):
         # Text box
@@ -46,7 +48,7 @@ class App(Frame):
         self.analyze.destroy()
         self.left["text"] = "Select Ref and Experiment files, and a target sequence.\n"
 
-        self.files_path = filedialog.askopenfilename(title = "Select fileserence file", filetypes = [("ab1 files","*.ab1")])
+        self.ref_path = filedialog.askopenfilename(title = "Select reference file", filetypes = [("ab1 files","*.ab1")])
         self.test_path = filedialog.askopenfilename(title = "Select experiment file", filetypes = [("ab1 files","*.ab1")])
         self.target_sequence = simpledialog.askstring("Target Sequence","Input your nucleotide sequence:")
         for letter in self.target_sequence:
@@ -81,20 +83,23 @@ class App(Frame):
         self.target_sequence = 'CCGGCAAGCTGCCCGTGCCC'
         self.target_range = [13,14,15,16]
 
-        # Initializes SeqDoc object with fileserence and test file
-        self.seqdoc = CrisPy.SeqDoc(self.files_path, self.test_path)
+        # Initializes SeqDoc object with reference and test file
+        self.seqdoc = CrisPy.SeqDoc(self.ref_path, self.test_path)
         align_length, self.diffs = self.seqdoc.get_all_data()
 
         # Initializes OfftargetFinder
-        offtargeter = CrisPy.OfftargetFinder(self.seqdoc.files_trace, self.target_sequence)
+        offtargeter = CrisPy.OfftargetFinder(self.seqdoc.ref_trace, self.target_sequence)
         match_dict = offtargeter.get_targets()
 
         # Initializes Sequalizer object
-        sequalizer = CrisPy.Sequalizer(self.seqdoc.files_trace, self.seqdoc.test_trace, self.diffs, self.target_sequence, self.target_range)
-        print(sequalizer.get_mutation_freq())
+        sequalizer = CrisPy.Sequalizer(self.seqdoc.ref_trace, self.seqdoc.test_trace, self.diffs, self.target_sequence, self.target_range)
+        self.mut_freq_dict[0] = sequalizer.get_mutation_freq()
+        print(0)
+        print(self.mut_freq_dict[0])
         for k in sorted(match_dict):
+            self.mut_freq_dict[k] = sequalizer.get_mutation_freq(match_override=match_dict[k])
             print(k)
-            print(sequalizer.get_mutation_freq(match_override=match_dict[k]))
+            print(self.mut_freq_dict[k])
 
 
         self.left["text"] = "Mutation frequency calcultations succesful.\n"
@@ -109,7 +114,7 @@ class App(Frame):
 
     def displayOutput(self):
         # display difference data on a plot
-        plt.xticks(self.seqdoc.files_trace['base_pos'])
+        plt.xticks(self.seqdoc.ref_trace['base_pos'])
         plt.title('Difference Between Traces')
         plt.xlabel('Base Index')
         plt.ylabel('Relative Frequency')
@@ -125,8 +130,10 @@ class App(Frame):
         self.save.destroy()
         self.display.destroy()
 
-        ######### do something to save our outputs ##################
-
+        with open('CrisPy_Output.csv', 'w') as f:  # Just use 'w' mode in 3.x
+            w = csv.DictWriter(f, self.mut_freq_dict.keys())
+            w.writeheader()
+            w.writerow(self.mut_freq_dict)
 
         self.left["text"] += "Would you like to  analyze another file, or are you done?"
 
