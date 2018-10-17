@@ -10,6 +10,11 @@ class App(Frame):
         self.pack()
         self.createWidgets()
         self.mut_freq_dict = {}
+        # user can set a default target sequence here
+        #self.target_sequence = 'CCGGCAAGCTGCCCGTGCCC'
+        self.target_sequence = 'GGGCACGGGCAGCTTGCCGG'
+        #self.target_range = [13,14,15,16]
+        self.target_range = [4,5,6]
 
     def createWidgets(self):
         # Text box
@@ -50,23 +55,28 @@ class App(Frame):
 
         self.ref_path = filedialog.askopenfilename(title = "Select reference file", filetypes = [("ab1 files","*.ab1")])
         self.test_path = filedialog.askopenfilename(title = "Select experiment file", filetypes = [("ab1 files","*.ab1")])
-        self.target_sequence = simpledialog.askstring("Target Sequence","Input your nucleotide sequence:")
+        input_sequence = simpledialog.askstring("Target Sequence","Input your nucleotide sequence:")
+        if (len(input_sequence)>0):
+              self.target_sequence = input_sequence
         for letter in self.target_sequence:
             if letter not in ('A','C','G','T','a','c','g','t'):
                 raise "not a valid nucleotide sequence"
-        self.target_range = simpledialog.askstring("Target Range","Start and end index(ex: 13,15)")
+        input_range = simpledialog.askstring("Target Range","Start and end index(ex: 13,15)")
+        if (len(input_range)>0):
+            self.target_range = input_range
         try:
-            self.target_range = list(map(int, self.target_range.split(',')))
-            if len(self.target_range) != 2:
-                raise "not a valid range"
-            elif self.target_range[0] > self.target_range[1]:
-                raise "not a valid range"
-            elif self.target_range[0] not in range(0,len(self.target_sequence)):
-                raise "not a valid range"
-            elif self.target_range[1] not in range(0,len(self.target_sequence)):
-                raise "not a valid range"
-            else:
-                self.target_range = list(range(self.target_range[0], self.target_range[1]+1))
+            if not (isinstance(self.target_range, list)): # by default sets this range to the CAMERA experiment's
+                self.target_range = list(map(int, self.target_range.split(',')))
+                if len(self.target_range) != 2:
+                    raise "not a valid range"
+                elif self.target_range[0] > self.target_range[1]:
+                    raise "not a valid range"
+                elif self.target_range[0] not in range(0,len(self.target_sequence)):
+                    raise "not a valid range"
+                elif self.target_range[1] not in range(0,len(self.target_sequence)):
+                    raise "not a valid range"
+                else:
+                    self.target_range = list(range(self.target_range[0], self.target_range[1]+1))
         except ValueError:
             raise "not a valid range"
 
@@ -80,9 +90,6 @@ class App(Frame):
         self.analyze.destroy()
 
         # Calls on CrisPy
-        self.target_sequence = 'CCGGCAAGCTGCCCGTGCCC'
-        self.target_range = [13,14,15,16]
-
         # Initializes SeqDoc object with reference and test file
         self.seqdoc = CrisPy.SeqDoc(self.ref_path, self.test_path)
         align_length, self.diffs = self.seqdoc.get_all_data()
@@ -94,12 +101,14 @@ class App(Frame):
         # Initializes Sequalizer object
         sequalizer = CrisPy.Sequalizer(self.seqdoc.ref_trace, self.seqdoc.test_trace, self.diffs, self.target_sequence, self.target_range)
         self.mut_freq_dict[0] = sequalizer.get_mutation_freq()
-        print(0)
-        print(self.mut_freq_dict[0])
+        print('Target Sequence:')
+        print('Score is ', 1)
+        print(self.mut_freq_dict[0], '\n')
         for k in sorted(match_dict):
             self.mut_freq_dict[k] = sequalizer.get_mutation_freq(match_override=match_dict[k])
-            print(k)
-            print(self.mut_freq_dict[k])
+            print('Off-Target Sequence:')
+            print('Score is ' , 1-k)
+            print(self.mut_freq_dict[k],'\n')
 
 
         self.left["text"] = "Mutation frequency calcultations succesful.\n"

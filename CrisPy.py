@@ -304,7 +304,7 @@ class Sequalizer(object):
                 self.align_end = match_override
             elif match_override < -(len(self.ref_data['A']) - len(self.diff_data['A'])):
                 # antisense strand
-                self.align_start = (len(self.ref_data['A']) + match_override) + 3
+                self.align_start = (len(self.ref_data['sequence']) + match_override) + 3
                 self.align_end = self.align_start + 20
         else:
             # uses pairwise2 module to find best target<->sequence alignment, records start and stop index
@@ -327,6 +327,7 @@ class Sequalizer(object):
                 else:
                     current_position = self.align_end - base_index
                     target_base = self.ref_data['sequence'][current_position]
+
             else:
                 current_position = self.align_start + base_index
                 target_base = self.target_sequence[base_index]
@@ -350,7 +351,7 @@ class Sequalizer(object):
 
 # This class finds and ranks all possible target sites in a sanger sequence
 # ranking system is based off of the model from the Howard M. Salis Lab
-# parameters come from the UBC 2017 iGEM team
+# and the follow up work done by UBC 2017 iGEM team
 class OfftargetFinder(object):
     def __init__(self, ref_data, target_sequence):
         self.pos_weights = (0.554111551727719,0.999999999999958,0.999859588152223,0.999997460325925,0.414113900546951,
@@ -401,19 +402,20 @@ class OfftargetFinder(object):
                         score += self.pos_weights[position]
                 score = score/norm_factor
                 match_dict[score] = start
+        print(match_dict);
         return match_dict
 
     def get_targets(self):
         match_indexes = self._match_ngg()
         match_dict = self._calc_binding(match_indexes)
         for k,v in match_dict.copy().items():
-            print("score is: ")
-            print(k)
-            print("starting at:")
-            print(v)
+            # print("score is: ")
+            # print(k)
+            # print("starting at:")
+            # print(v)
             if (k > .6) or (k == 0):
-                print("deleted")
+                # print("deleted")
                 del match_dict[k]
-            print("\n")
+            # print("\n")
         return match_dict
 # End OfftargetFinder Class
