@@ -11,6 +11,7 @@ The aim of our software tool (CrisPy) was to provide a fast and accurate way for
 
 
 <h2>To set up:</h2>
+
 1. Download the biopython library https://biopython.org/wiki/Download
 2. Download this repo and run CrisPyApp.py to use the GUI, or directly use classes defined in CrisPy.py
 3. Upload your reference and test trace (.ab1 files) to compare the two
