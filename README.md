@@ -21,5 +21,5 @@ Email Evan Becker (ewb12@pitt.edu) for questions
 
 Testing Results:
 
-![alt text](https://raw.githubusercontent.com/MiscM/CrisPy/master/images/img.png)
+![alt text](https://raw.githubusercontent.com/MiscM/CrisPy/master/images/CrisPy.png)
 
