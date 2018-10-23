@@ -18,3 +18,6 @@ To set up:
 Email Evan Becker (ewb12@pitt.edu) for questions
 
 ![CrisPy Results](CrisPy.png?raw=true "Title")
+<p align="center">
+  <img src="CrisPy.png" width="350" title="hover text">
+</p>
