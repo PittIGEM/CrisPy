@@ -17,7 +17,8 @@ To set up:
 
 Email Evan Becker (ewb12@pitt.edu) for questions
 
-![CrisPy Results](CrisPy.png?raw=true "Title")
+
+Off Target Characterization Example using CrisPy
 <p align="center">
-  <img src="CrisPy.png" width="350" title="hover text">
+  <img src="CrisPy.png" width="500" title="hover text">
 </p>
