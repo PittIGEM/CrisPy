@@ -18,7 +18,7 @@ To set up:
 Email Evan Becker (ewb12@pitt.edu) for questions
 
 
-Off Target Characterization Example using CrisPy
+<h2>Off Target Characterization Example using CrisPy</h2>
 <p align="center">
   <img src="CrisPy.png" width="500" title="hover text">
 </p>
