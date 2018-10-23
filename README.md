@@ -16,3 +16,5 @@ To set up:
 
 
 Email Evan Becker (ewb12@pitt.edu) for questions
+
+![CrisPy Results](CrisPy.png?raw=true "Title")
